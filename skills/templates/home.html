@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Baylor Hero Section with Gradient -->
+<div class="row mb-5">
+    <div class="col-lg-8 mx-auto text-center">
+        <div style="padding: 3rem 2rem; background: linear-gradient(135deg, rgba(0, 61, 122, 0.08), rgba(206, 203, 0, 0.08)); border-radius: 20px; border: 2px solid rgba(0, 61, 122, 0.2); margin-bottom: 2rem;">
+            <h1 class="display-4 fw-bold mb-3">Welcome to<br><span style="background: linear-gradient(135deg, #003D7A, #005a99); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Baylor SkillSwap</span></h1>
+            <p class="lead text-muted mb-4">
+                🐻 Connect with fellow Bears • 📚 Share your skills • 🚀 Help your community • 💚 For the Bears
+            </p>
+            
+            {% if not user.is_authenticated %}
+                <p class="mb-0">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-3">Get Started</a>
+                    <a href="{% url 'skill_list' %}" class="btn btn-outline-secondary btn-lg">Browse Skills</a>
+                </p>
+            {% else %}
+                <p class="mb-0">
+                    <a href="{% url 'skill_create' %}" class="btn btn-success btn-lg me-3">Post Your Skill</a>
+                    <a href="{% url 'skill_list' %}" class="btn btn-outline-secondary btn-lg me-3">Explore Skills</a>
+                    <a href="{% url 'inbox' %}" class="btn btn-info btn-lg">💬 Messages</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Divider -->
+<hr class="my-5" style="border-top: 2px solid rgba(0, 61, 122, 0.15);">
+
+<!-- Recent Skills Section -->
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-1" style="font-weight: 700; color: #003D7A;">Recently Posted Skills</h2>
+        <p class="text-muted mb-4">Discover what your Baylor family is sharing</p>
+        
+        {% if skills %}
+            <div class="row">
+                {% for skill in skills %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <!-- Card Header with Category -->
+                            <div class="card-header border-0 d-flex justify-content-between align-items-center">
+                                <span class="skill-badge">{{ skill.get_category_display }}</span>
+                                {% if skill.price_type == 'paid' %}
+                                    <span class="price-badge">
+                                        💰 ${{ skill.price }}
+                                    </span>
+                                {% else %}
+                                    <span class="price-badge" style="color: #FECB00;">✨ FREE</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <h5 class="card-title">{{ skill.title }}</h5>
+                                <p class="card-text text-muted small mb-3">
+                                    {{ skill.description|truncatewords:20 }}
+                                </p>
+                                
+                                <!-- Small Details -->
+                                <div class="small">
+                                    <p class="mb-2">
+                                        <strong>👤 By:</strong> <span style="color: #003D7A; font-weight: 600;">{{ skill.owner.username }}</span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <strong>📅 Available:</strong> <span class="badge bg-success" style="font-size: 0.75rem;">{{ skill.get_availability_display }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Card Footer -->
+                            <div class="card-footer border-0 d-grid">
+                                <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-primary btn-sm">
+                                    View Details →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- See All Skills Button -->
+            <div class="text-center mt-4">
+                <a href="{% url 'skill_list' %}" class="btn btn-primary btn-lg">
+                    View All Skills →
+                </a>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center py-4" style="border-radius: 15px;">
+                <p class="mb-0" style="font-size: 1.1rem;">📭 No skills posted yet. Be the first Bear to share your skills!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<hr class="my-5" style="border-top: 2px solid rgba(0, 61, 122, 0.15);">
+
+<!-- How It Works Section -->
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-5 text-center" style="font-weight: 700; color: #003D7A;">How Baylor SkillSwap Works</h2>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="text-center">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(0, 61, 122, 0.15), rgba(206, 203, 0, 0.15)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem;">
+                📋
+            </div>
+            <h5 style="font-weight: 700; color: #003D7A;">Sign Up</h5>
+            <p class="text-muted">Create a free account with your Baylor email and join the community.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="text-center">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(206, 203, 0, 0.15), rgba(0, 61, 122, 0.15)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem;">
+                ✍️
+            </div>
+            <h5 style="font-weight: 700; color: #003D7A;">Share Your Skills</h5>
+            <p class="text-muted">Post what you can teach or help with. Share for free or set your own price.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="text-center">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(0, 61, 122, 0.15), rgba(206, 203, 0, 0.15)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem;">
+                🤝
+            </div>
+            <h5 style="font-weight: 700; color: #003D7A;">Connect & Support</h5>
+            <p class="text-muted">Browse and connect with fellow Bears to exchange skills and support each other.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Baylor Tagline -->
+<div class="text-center mt-5 pt-4" style="border-top: 2px solid rgba(0, 61, 122, 0.15);">
+    <p style="font-size: 1.1rem; color: #003D7A; font-weight: 700;">
+        💚 One Community. One Purpose. <span style="color: #FECB00;">For the Bears</span>. 💛
+    </p>
+</div>
+{% endblock %}

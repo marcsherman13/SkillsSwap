@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-lg-10 mx-auto">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1 style="font-weight: 700; color: #003D7A; margin-bottom: 0.5rem;">💬 Messages</h1>
+                {% if total_unread > 0 %}
+                    <span class="badge" style="background: #FECB00; color: #003D7A; font-size: 1rem; padding: 0.5rem 0.75rem;">
+                        {{ total_unread }} unread
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Conversations List -->
+        {% if conversations %}
+            <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                {% for conversation in conversations %}
+                    <a href="{% url 'view_conversation' conversation.user.id %}" style="text-decoration: none; color: inherit;">
+                        <div class="card shadow-sm" style="border-left: 4px solid #003D7A; transition: all 0.3s ease; cursor: pointer;">
+                            <div class="card-body">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <!-- User Info -->
+                                    <div style="flex: 1;">
+                                        <h5 style="font-weight: 700; color: #003D7A; margin-bottom: 0.5rem;">
+                                            {{ conversation.user.get_full_name|default:conversation.user.username }}
+                                            {% if conversation.unread_count > 0 %}
+                                                <span class="badge" style="background: #FECB00; color: #003D7A; font-size: 0.75rem;">
+                                                    {{ conversation.unread_count }}
+                                                </span>
+                                            {% endif %}
+                                        </h5>
+                                        
+                                        {% if conversation.with_skill %}
+                                            <small class="text-muted">
+                                                Discussing: <strong>{{ conversation.with_skill.title }}</strong>
+                                            </small>
+                                            <br>
+                                        {% endif %}
+                                        
+                                        <!-- Last Message Preview -->
+                                        <p class="mb-0 text-muted" style="font-size: 0.95rem; margin-top: 0.5rem;">
+                                            {% if conversation.last_message.sender == request.user %}
+                                                <strong>You:</strong>
+                                            {% endif %}
+                                            {{ conversation.last_message.subject }}
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Date -->
+                                    <div style="text-align: right; margin-left: 1rem;">
+                                        <small class="text-muted">
+                                            {{ conversation.last_message.created_at|date:"M d" }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No Conversations -->
+            <div class="alert" style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.1), rgba(206, 203, 0, 0.08)); border: 2px dashed rgba(0, 61, 122, 0.3); border-radius: 15px; text-align: center; padding: 3rem;">
+                <h5 style="color: #003D7A; font-weight: 700; margin-bottom: 0.5rem;">📭 No Messages</h5>
+                <p class="text-muted mb-3">You haven't started any conversations yet.</p>
+                <a href="{% url 'skill_list' %}" class="btn btn-primary" style="font-weight: 600;">
+                    🔍 Browse Skills & Start Messaging
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

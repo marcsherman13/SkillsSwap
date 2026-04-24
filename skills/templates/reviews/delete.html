@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <!-- Back Link -->
+        <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-outline-secondary btn-sm mb-4" style="font-weight: 600;">
+            ← Cancel
+        </a>
+        
+        <!-- Confirmation Card -->
+        <div class="card border-danger shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #003D7A, #001F47); border: none; padding: 1.5rem;">
+                <h3 class="mb-0" style="color: white; font-weight: 700;">⚠️ Delete Your Review?</h3>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem;">
+                <p style="font-size: 1.05rem; color: #666; margin-bottom: 2rem;">
+                    Are you sure you want to delete your review? <strong>This action cannot be undone.</strong>
+                </p>
+                
+                <!-- Review Preview -->
+                <div style="background: rgba(0, 61, 122, 0.05); border: 2px solid rgba(0, 61, 122, 0.2); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h5 style="font-weight: 700; color: #003D7A; margin-bottom: 0.25rem;">{{ skill.title }}</h5>
+                            <small class="text-muted">Skill by <strong>{{ skill.owner.get_full_name|default:skill.owner.username }}</strong></small>
+                        </div>
+                        <span style="font-size: 1.25rem; color: #FECB00;">{{ review.get_rating_display }}</span>
+                    </div>
+                    <p class="text-muted" style="margin-bottom: 0.75rem;">{{ review.review_text }}</p>
+                    <small class="text-muted" style="display: block;">
+                        📅 Reviewed on {{ review.created_at|date:"M d, Y" }}
+                    </small>
+                </div>
+                
+                <!-- Action Buttons -->
+                <form method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    {% csrf_token %}
+                    <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-outline-secondary" style="font-weight: 600; padding: 0.75rem;">
+                        Keep It
+                    </a>
+                    <button type="submit" class="btn btn-danger" style="font-weight: 600; padding: 0.75rem;">
+                        🗑️ Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

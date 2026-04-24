@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-5 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #003D7A, #001F47); border: none; padding: 1.5rem;">
+                <h3 class="mb-0" style="color: white; font-weight: 700;">📝 Create an Account</h3>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem;">
+                <!-- Form -->
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Username -->
+                    <div class="mb-3">
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="alert alert-danger mt-2 mb-0 small" style="background: rgba(238, 90, 111, 0.1); border: 2px solid #EE5A6F; border-radius: 8px; padding: 0.75rem; color: #c73450;">
+                                {{ form.username.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="mb-3">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="alert alert-danger mt-2 mb-0 small" style="background: rgba(238, 90, 111, 0.1); border: 2px solid #EE5A6F; border-radius: 8px; padding: 0.75rem; color: #c73450;">
+                                {{ form.email.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="mb-3">
+                        {{ form.password1.label_tag }}
+                        {{ form.password1 }}
+                        {% if form.password1.help_text %}
+                            <small class="form-text text-muted d-block mt-1" style="font-size: 0.85rem; line-height: 1.5;">
+                                {{ form.password1.help_text|safe }}
+                            </small>
+                        {% endif %}
+                        {% if form.password1.errors %}
+                            <div class="alert alert-danger mt-2 mb-0 small" style="background: rgba(238, 90, 111, 0.1); border: 2px solid #EE5A6F; border-radius: 8px; padding: 0.75rem; color: #c73450;">
+                                {{ form.password1.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Confirm Password -->
+                    <div class="mb-4">
+                        {{ form.password2.label_tag }}
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="alert alert-danger mt-2 mb-0 small" style="background: rgba(238, 90, 111, 0.1); border: 2px solid #EE5A6F; border-radius: 8px; padding: 0.75rem; color: #c73450;">
+                                {{ form.password2.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-success btn-lg w-100 mb-3" style="font-weight: 600; padding: 0.9rem;">
+                        🚀 Create Account
+                    </button>
+                </form>
+                
+                <!-- Already Have Account -->
+                <p class="text-center text-muted mb-0" style="font-weight: 500;">
+                    Already have an account? 
+                    <a href="{% url 'login' %}" style="color: #003D7A; font-weight: 700; text-decoration: none;">Log in here</a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="alert" style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.15), rgba(206, 203, 0, 0.08)); border: 2px solid rgba(0, 61, 122, 0.3); border-radius: 12px; border-left: 4px solid #FECB00; margin-top: 2rem;">
+            <h6 style="color: #003D7A; font-weight: 700; margin-bottom: 0.75rem;">✨ Why Create an Account?</h6>
+            <ul class="mb-0 small" style="color: #666;">
+                <li style="margin-bottom: 0.5rem;">📢 Post your skills and offer help to fellow Bears</li>
+                <li style="margin-bottom: 0.5rem;">🔍 Discover skills other Baylor students are sharing</li>
+                <li style="margin-bottom: 0.5rem;">👥 Connect with students on your campus</li>
+                <li>⭐ Build your profile and reputation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="mb-2" style="font-weight: 700; color: #003D7A; font-size: 2.2rem;">Browse Baylor Skills</h1>
+<p class="text-muted mb-4">Find skills from your Baylor family</p>
+
+<!-- Search and Filter Section -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-3 mb-lg-0">
+        <form method="get" class="d-flex gap-2">
+            <input 
+                type="text" 
+                name="search" 
+                class="form-control" 
+                placeholder="Search skills..."
+                value="{{ search_query }}"
+                style="border-radius: 10px; font-weight: 500;"
+            >
+            <button class="btn btn-primary" type="submit" style="font-weight: 600; padding: 0.75rem 1.5rem;">
+                🔍 Search
+            </button>
+        </form>
+    </div>
+    
+    <div class="col-lg-6">
+        <form method="get" class="d-flex gap-2">
+            <select name="category" class="form-select" onchange="this.form.submit()" style="border-radius: 10px; font-weight: 500;">
+                <option value="">📚 All Categories</option>
+                <option value="tutoring" {% if selected_category == 'tutoring' %}selected{% endif %}>📖 Tutoring</option>
+                <option value="music" {% if selected_category == 'music' %}selected{% endif %}>🎵 Music Lessons</option>
+                <option value="sports" {% if selected_category == 'sports' %}selected{% endif %}>⚽ Sports</option>
+                <option value="tech" {% if selected_category == 'tech' %}selected{% endif %}>💻 Tech Help</option>
+                <option value="art" {% if selected_category == 'art' %}selected{% endif %}>🎨 Art & Design</option>
+                <option value="writing" {% if selected_category == 'writing' %}selected{% endif %}>✍️ Writing</option>
+                <option value="language" {% if selected_category == 'language' %}selected{% endif %}>🌍 Language</option>
+                <option value="other" {% if selected_category == 'other' %}selected{% endif %}>⭐ Other</option>
+            </select>
+        </form>
+    </div>
+</div>
+
+<!-- Results Info -->
+<div class="alert alert-info" style="border-radius: 12px; border-left: 4px solid #003D7A; background: rgba(0, 61, 122, 0.1); color: #003D7A;">
+    <strong>Results:</strong> Found <span style="color: #003D7A; font-weight: 700;">{{ skills|length }}</span> skill{{ skills|length|pluralize }}
+    {% if search_query %}<strong>matching "{{ search_query }}"</strong>{% endif %}
+    {% if selected_category %}<strong>in "{{ selected_category }}"</strong>{% endif %}
+</div>
+
+<!-- Skills Grid -->
+{% if skills %}
+    <div class="row">
+        {% for skill in skills %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <!-- Header with Category and Price -->
+                    <div class="card-header border-0 d-flex justify-content-between align-items-center">
+                        <span class="skill-badge">{{ skill.get_category_display }}</span>
+                        {% if skill.price_type == 'paid' %}
+                            <span class="price-badge">💰 ${{ skill.price }}</span>
+                        {% else %}
+                            <span class="price-badge" style="color: #FECB00;">✨ FREE</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Body -->
+                    <div class="card-body">
+                        <h5 class="card-title">{{ skill.title }}</h5>
+                        <p class="card-text text-muted small mb-3">
+                            {{ skill.description|truncatewords:20 }}
+                        </p>
+                        
+                        <!-- Skill Details -->
+                        <div class="small" style="line-height: 1.8;">
+                            <p class="mb-1">
+                                <strong>👤 By:</strong> <span style="color: #003D7A; font-weight: 600;">{{ skill.owner.username }}</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>💬 Contact:</strong> {{ skill.get_contact_preference_display }}
+                            </p>
+                            <p class="mb-0">
+                                <strong>Status:</strong> 
+                                <span class="badge bg-success" style="font-size: 0.8rem;">{{ skill.get_availability_display }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="card-footer border-0 d-grid">
+                        <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-primary btn-sm" style="font-weight: 600;">
+                            View Details →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <!-- No skills found -->
+    <div class="alert" style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.1), rgba(206, 203, 0, 0.08)); border: 2px dashed rgba(0, 61, 122, 0.3); border-radius: 15px; text-align: center; padding: 3rem;">
+        <h5 style="color: #003D7A; font-weight: 700;">🔍 No Skills Found</h5>
+        <p class="mb-3 text-muted">Try adjusting your search or browse all skills without filters.</p>
+        <a href="{% url 'skill_list' %}" class="btn btn-outline-primary">Clear Filters</a>
+    </div>
+{% endif %}
+{% endblock %}

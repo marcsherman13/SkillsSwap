@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-lg-8 mx-auto">
+        <!-- Back Link -->
+        <a href="{% url 'inbox' %}" class="btn btn-outline-secondary btn-sm mb-4" style="font-weight: 600;">
+            ⬅️ Back to Inbox
+        </a>
+        
+        <!-- Conversation Header -->
+        <div style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.1), rgba(206, 203, 0, 0.08)); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid #003D7A;">
+            <h2 style="font-weight: 700; color: #003D7A; margin-bottom: 0.25rem;">
+                💬 {{ other_user.get_full_name|default:other_user.username }}
+            </h2>
+            <small class="text-muted">@{{ other_user.username }}</small>
+        </div>
+        
+        <!-- Messages Thread -->
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; max-height: 500px; overflow-y: auto; padding-right: 0.5rem;">
+            {% for message in messages %}
+                {% if message.sender == request.user %}
+                    <!-- Sent Message (Right) -->
+                    <div style="display: flex; justify-content: flex-end;">
+                        <div class="card shadow-sm" style="max-width: 70%; background: #003D7A; border: none;">
+                            <div class="card-body" style="color: white; padding: 1rem;">
+                                <h6 style="font-weight: 600; margin-bottom: 0.5rem; opacity: 0.9;">{{ message.subject }}</h6>
+                                <p class="mb-2">{{ message.body }}</p>
+                                <small style="opacity: 0.8;">{{ message.created_at|date:"M d, H:i" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Received Message (Left) -->
+                    <div style="display: flex; justify-content: flex-start;">
+                        <div class="card shadow-sm" style="max-width: 70%; background: rgba(0, 61, 122, 0.05); border: 1px solid rgba(0, 61, 122, 0.2);">
+                            <div class="card-body" style="padding: 1rem;">
+                                <h6 style="font-weight: 600; color: #003D7A; margin-bottom: 0.5rem;">{{ message.subject }}</h6>
+                                <p class="mb-2">{{ message.body }}</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <small class="text-muted">{{ message.created_at|date:"M d, H:i" }}</small>
+                                    <a href="{% url 'delete_message' message.id %}" class="btn btn-sm btn-outline-danger" style="font-weight: 600; padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                        🗑️
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+        <!-- Reply Form -->
+        <div class="card shadow-lg">
+            <div class="card-header" style="background: linear-gradient(135deg, #003D7A 0%, #001F47 100%); color: white; padding: 1.5rem;">
+                <h5 class="mb-0" style="font-weight: 700;">📝 Reply to {{ other_user.get_full_name|default:other_user.username }}</h5>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="post" action="{% url 'reply_message' other_user.id %}">
+                    {% csrf_token %}
+                    
+                    <!-- Subject -->
+                    <div class="mb-3">
+                        <label for="id_subject" class="form-label" style="font-weight: 600; color: #003D7A;">Subject</label>
+                        {{ form.subject }}
+                    </div>
+                    
+                    <!-- Message Body -->
+                    <div class="mb-3">
+                        <label for="id_body" class="form-label" style="font-weight: 600; color: #003D7A;">Your Message</label>
+                        {{ form.body }}
+                    </div>
+                    
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-primary btn-lg w-100" style="font-weight: 600; background: linear-gradient(135deg, #003D7A 0%, #001F47 100%); border: none;">
+                        📤 Send Reply
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

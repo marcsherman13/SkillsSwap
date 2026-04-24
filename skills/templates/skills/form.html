@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-lg-6 mx-auto">
+        <!-- Back Link -->
+        {% if skill %}
+            <a href="{% url 'skill_detail' skill.pk %}" class="btn btn-outline-secondary btn-sm mb-4" style="font-weight: 600;">
+                ← Back
+            </a>
+        {% else %}
+            <a href="{% url 'skill_list' %}" class="btn btn-outline-secondary btn-sm mb-4" style="font-weight: 600;">
+                ← Back
+            </a>
+        {% endif %}
+        
+        <!-- Card -->
+        <div class="card shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #003D7A, #001F47); border: none; padding: 1.5rem;">
+                <h3 class="mb-0" style="color: white; font-weight: 700;">
+                    {% if skill %}
+                        ✏️ Edit Your Skill
+                    {% else %}
+                        ➕ Post a New Skill
+                    {% endif %}
+                </h3>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem;">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Form Fields -->
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <!-- Label -->
+                            {% if field.label %}
+                                <label class="form-label" style="font-weight: 600; color: #003D7A;">
+                                    {{ field.label }}
+                                </label>
+                            {% endif %}
+                            
+                            <!-- Field Rendering -->
+                            {% if field.field.widget.input_type == 'hidden' %}
+                                {{ field }}
+                            {% elif field.field.widget.input_type == 'checkbox' %}
+                                <div class="form-check">
+                                    {{ field }}
+                                    <label class="form-check-label" for="{{ field.id_for_label }}">
+                                        {{ field.label }}
+                                    </label>
+                                </div>
+                            {% elif field.field.widget.input_type == 'radio' %}
+                                <div class="form-check">
+                                    {% for radio in field %}
+                                        <div class="form-check" style="margin-bottom: 0.75rem;">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}" style="font-weight: 500; margin-left: 0.5rem;">
+                                                {{ radio.choice_label }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% elif field.field.widget.input_type == 'select' %}
+                                {{ field }}
+                            {% elif field.field.widget.input_type == 'textarea' %}
+                                {{ field }}
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                            
+                            <!-- Help Text -->
+                            {% if field.help_text %}
+                                <small class="form-text text-muted d-block mt-1" style="font-size: 0.85rem;">
+                                    {{ field.help_text|safe }}
+                                </small>
+                            {% endif %}
+                            
+                            <!-- Errors -->
+                            {% if field.errors %}
+                                <div class="alert alert-danger mt-2 mb-0" style="background: rgba(238, 90, 111, 0.1); border: 2px solid #EE5A6F; border-radius: 8px; padding: 0.75rem; font-size: 0.9rem; color: #c73450;">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mt-4" style="font-weight: 600; padding: 0.9rem;">
+                        {% if skill %}
+                            💾 Update Skill
+                        {% else %}
+                            ➕ Post Skill
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tips Box -->
+        <div class="alert" style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.15), rgba(206, 203, 0, 0.08)); border: 2px solid rgba(0, 61, 122, 0.3); border-radius: 12px; border-left: 4px solid #FECB00; margin-top: 2rem;">
+            <h6 style="color: #003D7A; font-weight: 700; margin-bottom: 0.75rem;">💡 Tips for a Great Skill Post:</h6>
+            <ul class="mb-0 small" style="color: #666;">
+                <li style="margin-bottom: 0.5rem;">Be clear and specific about what you're offering</li>
+                <li style="margin-bottom: 0.5rem;">Mention your experience level or qualifications</li>
+                <li style="margin-bottom: 0.5rem;">Explain what students will learn from you</li>
+                <li style="margin-bottom: 0.5rem;">Be honest about your availability</li>
+                <li>Set a fair price or offer free help</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

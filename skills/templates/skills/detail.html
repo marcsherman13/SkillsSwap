@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-lg-8 mx-auto">
+        <!-- Back Link -->
+        <a href="{% url 'skill_list' %}" class="btn btn-outline-secondary btn-sm mb-4" style="font-weight: 600;">
+            ← Back to Skills
+        </a>
+        
+        <!-- Main Card -->
+        <div class="card shadow-sm">
+            <!-- Header with Category & Price -->
+            <div class="card-header border-0 d-flex justify-content-between align-items-start">
+                <div>
+                    <span class="skill-badge">{{ skill.get_category_display }}</span>
+                </div>
+                <div>
+                    {% if skill.price_type == 'paid' %}
+                        <span class="price-badge">💰 ${{ skill.price }}</span>
+                    {% else %}
+                        <span class="price-badge" style="color: #FECB00;">✨ FREE</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Body -->
+            <div class="card-body">
+                <h1 class="mb-2" style="font-weight: 700; color: #003D7A;">{{ skill.title }}</h1>
+                
+                <!-- Posted By -->
+                <p class="text-muted mb-4" style="font-size: 1rem;">
+                    Posted by <strong style="color: #003D7A;">{{ skill.owner.get_full_name|default:skill.owner.username }}</strong>
+                    on <strong>{{ skill.created_at|date:"M d, Y" }}</strong>
+                </p>
+                
+                <!-- Horizontal Rule -->
+                <hr style="border-top: 2px solid rgba(0, 61, 122, 0.1);">
+                
+                <!-- Description -->
+                <h4 class="mt-4 mb-3" style="font-weight: 700; color: #003D7A;">📝 Description</h4>
+                <p style="font-size: 1.05rem; line-height: 1.8; color: #444;">{{ skill.description }}</p>
+                
+                <!-- Details Grid -->
+                <hr class="my-4" style="border-top: 2px solid rgba(0, 61, 122, 0.1);">
+                
+                <h4 class="mb-3" style="font-weight: 700; color: #003D7A;">📋 Details</h4>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div style="background: rgba(0, 61, 122, 0.05); padding: 1rem; border-radius: 10px; border-left: 4px solid #003D7A;">
+                            <h6 class="text-muted mb-2" style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">📅 Availability</h6>
+                            <p style="font-size: 1.05rem; font-weight: 600; color: #003D7A;">
+                                {{ skill.get_availability_display }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div style="background: rgba(206, 203, 0, 0.05); padding: 1rem; border-radius: 10px; border-left: 4px solid #FECB00;">
+                            <h6 class="text-muted mb-2" style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">💰 Price Type</h6>
+                            <p style="font-size: 1.05rem; font-weight: 600; color: #003D7A;">
+                                {{ skill.get_price_type_display }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div style="background: rgba(206, 203, 0, 0.05); padding: 1rem; border-radius: 10px; border-left: 4px solid #FECB00;">
+                            <h6 class="text-muted mb-2" style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">💬 Contact Method</h6>
+                            <p style="font-size: 1.05rem; font-weight: 600; color: #003D7A;">
+                                {{ skill.get_contact_preference_display }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div style="background: rgba(0, 61, 122, 0.05); padding: 1rem; border-radius: 10px; border-left: 4px solid #003D7A;">
+                            <h6 class="text-muted mb-2" style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">🔄 Last Updated</h6>
+                            <p style="font-size: 1.05rem; font-weight: 600; color: #003D7A;">
+                                {{ skill.updated_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr style="border-top: 2px solid rgba(91, 122, 255, 0.1);">
+            </div>
+            
+            <!-- Footer with Actions -->
+            <div class="card-footer border-0 d-flex gap-2">
+                {% if user.is_authenticated and user == skill.owner %}
+                    <!-- Owner: Can edit and delete -->
+                    <a href="{% url 'skill_update' skill.pk %}" class="btn btn-warning" style="font-weight: 600;">
+                        ✏️ Edit Skill
+                    </a>
+                    <a href="{% url 'skill_delete' skill.pk %}" class="btn btn-danger" style="font-weight: 600;">
+                        🗑️ Delete Skill
+                    </a>
+                {% elif user.is_authenticated %}
+                    <!-- Not owner: Can contact via messaging -->
+                    <a href="{% url 'send_message_skill' skill.owner.pk skill.pk %}" class="btn btn-primary btn-lg" style="font-weight: 600; flex: 1;">
+                        ✉️ Message {{ skill.owner.first_name|default:skill.owner.username }}
+                    </a>
+                    <a href="{% url 'inbox' %}" class="btn btn-outline-secondary" style="font-weight: 600;">
+                        💬 Inbox
+                    </a>
+                {% else %}
+                    <!-- Not logged in -->
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg" style="font-weight: 600; flex: 1;">
+                        🔓 Log in to Contact
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- ==================== REVIEWS SECTION ==================== -->
+        <div style="margin-top: 3rem;">
+            <!-- Rating Summary -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center" style="padding: 2rem;">
+                    <div style="display: flex; justify-content: space-around; align-items: center;">
+                        <!-- Average Rating -->
+                        <div>
+                            <h3 style="font-weight: 700; color: #FECB00; margin-bottom: 0.5rem; font-size: 2rem;">
+                                {{ average_rating }}
+                            </h3>
+                            <p class="mb-0 text-muted" style="font-size: 0.95rem;">
+                                {% if review_count == 1 %}
+                                    1 Review
+                                {% else %}
+                                    {{ review_count }} Reviews
+                                {% endif %}
+                            </p>
+                        </div>
+                        <!-- Stars Display -->
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
+                                {% if average_rating >= 1 %}⭐{% else %}☆{% endif %}
+                                {% if average_rating >= 2 %}⭐{% else %}☆{% endif %}
+                                {% if average_rating >= 3 %}⭐{% else %}☆{% endif %}
+                                {% if average_rating >= 4 %}⭐{% else %}☆{% endif %}
+                                {% if average_rating >= 5 %}⭐{% else %}☆{% endif %}
+                            </div>
+                            <small class="text-muted">Based on {{ review_count }} review{{ review_count|pluralize }}</small>
+                        </div>
+                        <!-- Review Button -->
+                        <div>
+                            {% if user.is_authenticated and user != skill.owner %}
+                                {% if user_review %}
+                                    <a href="{% url 'edit_review' skill.id user_review.id %}" class="btn btn-primary" style="font-weight: 600;">
+                                        ✏️ Edit Your Review
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'create_review' skill.id %}" class="btn btn-primary" style="font-weight: 600;">
+                                        ⭐ Leave a Review
+                                    </a>
+                                {% endif %}
+                            {% elif user.is_authenticated and user == skill.owner %}
+                                <p class="text-muted mb-0" style="font-size: 0.9rem;">You can't review your own skill</p>
+                            {% else %}
+                                <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                                    <a href="{% url 'login' %}" style="color: #003D7A; font-weight: 600;">Log in</a> to review
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reviews List -->
+            <h3 style="font-weight: 700; color: #003D7A; margin-bottom: 1.5rem;">📝 Reviews for this Skill</h3>
+            
+            {% if reviews %}
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+                    {% for review in reviews %}
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <!-- Review Header -->
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                    <div style="flex: 1;">
+                                        <h5 style="font-weight: 700; color: #003D7A; margin-bottom: 0.25rem;">
+                                            {{ review.reviewer.get_full_name|default:review.reviewer.username }}
+                                        </h5>
+                                        <small class="text-muted">
+                                            {{ review.created_at|date:"M d, Y" }}
+                                            {% if review.updated_at != review.created_at %}
+                                                <span style="opacity: 0.6;">(edited {{ review.updated_at|date:"M d, Y" }})</span>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <!-- Rating Stars -->
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 1.25rem; margin-bottom: 0.5rem;">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    ⭐
+                                                {% else %}
+                                                    ☆
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <small class="text-muted">{{ review.get_rating_display }}</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Review Text -->
+                                <p style="margin-bottom: 1rem; line-height: 1.6; color: #444;">
+                                    {{ review.review_text }}
+                                </p>
+                                
+                                <!-- Action Buttons (only for review author) -->
+                                {% if user.is_authenticated and user == review.reviewer %}
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <a href="{% url 'edit_review' skill.id review.id %}" class="btn btn-sm btn-outline-warning" style="font-weight: 600;">
+                                            ✏️ Edit
+                                        </a>
+                                        <a href="{% url 'delete_review' skill.id review.id %}" class="btn btn-sm btn-outline-danger" style="font-weight: 600;">
+                                            🗑️ Delete
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- No Reviews -->
+                <div class="alert" style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.1), rgba(206, 203, 0, 0.08)); border: 2px dashed rgba(0, 61, 122, 0.3); border-radius: 15px; text-align: center; padding: 2rem;">
+                    <h5 style="color: #003D7A; font-weight: 700; margin-bottom: 0.5rem;">📭 No Reviews Yet</h5>
+                    <p class="text-muted mb-3">Be the first Bear to review this skill and help the community!</p>
+                    {% if user.is_authenticated and user != skill.owner %}
+                        <a href="{% url 'create_review' skill.id %}" class="btn btn-primary" style="font-weight: 600;">
+                            ⭐ Leave the First Review
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

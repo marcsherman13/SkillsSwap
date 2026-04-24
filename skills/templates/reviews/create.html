@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Back Link -->
+        <a href="{% url 'skill_detail' skill.id %}" class="btn btn-outline-secondary btn-sm mb-4" style="font-weight: 600;">
+            ⬅️ Back to Skill
+        </a>
+        
+        <!-- Skill Preview -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-2" style="color: #003D7A;">{{ skill.title }}</h5>
+                <p class="card-text text-muted small">by <strong>{{ skill.owner.get_full_name|default:skill.owner.username }}</strong></p>
+            </div>
+        </div>
+        
+        <!-- Review Form Card -->
+        <div class="card shadow-lg">
+            <!-- Header -->
+            <div class="card-header" style="background: linear-gradient(135deg, #003D7A 0%, #001F47 100%); color: white; padding: 2rem;">
+                <h2 class="mb-0" style="font-weight: 700;">
+                    {% if is_edit %}✏️ Update Your Review{% else %}⭐ Leave a Review{% endif %}
+                </h2>
+                <p class="mb-0 mt-2" style="opacity: 0.95;">Help other Bears decide if this skill is right for them</p>
+            </div>
+            
+            <!-- Form Body -->
+            <div class="card-body p-4">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger border-3 border-start" style="background-color: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545;">
+                        {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Rating -->
+                    <div class="mb-4">
+                        <label class="form-label" style="font-weight: 600; color: #003D7A; display: block; margin-bottom: 1rem;">
+                            ⭐ How would you rate this skill?
+                        </label>
+                        <div class="rating-options">
+                            {% for value, label in form.rating.field.choices %}
+                                <div class="form-check" style="margin-bottom: 0.75rem;">
+                                    <input 
+                                        type="radio" 
+                                        class="form-check-input" 
+                                        id="id_rating_{{ forloop.counter }}" 
+                                        name="rating" 
+                                        value="{{ value }}"
+                                        {% if form.rating.value == value|stringformat:"s" %}checked{% endif %}
+                                    >
+                                    <label class="form-check-label" for="id_rating_{{ forloop.counter }}" style="font-weight: 500; cursor: pointer;">
+                                        {{ label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if form.rating.errors %}
+                            <div class="invalid-feedback d-block" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;">
+                                {{ form.rating.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Review Text -->
+                    <div class="mb-4">
+                        <label for="id_review_text" class="form-label" style="font-weight: 600; color: #003D7A;">
+                            📝 Your Review
+                        </label>
+                        {{ form.review_text }}
+                        {% if form.review_text.errors %}
+                            <div class="invalid-feedback d-block" style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;">
+                                {{ form.review_text.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="text-muted d-block mt-2">💡 Be specific! What did you learn? Would you recommend this skill to other bears?</small>
+                    </div>
+                    
+                    <!-- Tips Box -->
+                    <div class="alert" style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.15), rgba(206, 203, 0, 0.08)); border: 2px solid rgba(0, 61, 122, 0.3); border-left: 4px solid #FECB00; border-radius: 15px; margin-bottom: 2rem;">
+                        <h6 style="color: #003D7A; font-weight: 700; margin-bottom: 0.5rem;">💡 Tips for a Helpful Review:</h6>
+                        <ul class="mb-0 small" style="color: #666; line-height: 1.6;">
+                            <li>Be honest and fair in your rating</li>
+                            <li>Explain what you learned or what could be improved</li>
+                            <li>Would you recommend this to other students?</li>
+                            <li>Keep it respectful and constructive</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-100" style="font-weight: 600; padding: 0.8rem; background: linear-gradient(135deg, #003D7A 0%, #001F47 100%); border: none;">
+                        {% if is_edit %}✏️ Update Review{% else %}📤 Post Review{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
