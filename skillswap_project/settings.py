@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-vcpam@aoy24y^#na4u!853%zr&m@w1s4*-c55)zs0)uc!)vapk"
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-vcpam@aoy24y^#na4u!853%zr&m@w1s4*-c55)zs0)uc!)vapk")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -128,3 +130,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+
+# CSRF Configuration for production
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+    "http://localhost:8000",
+]
+
+# Security settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = False  # Set to True if using HTTPS
+    SESSION_COOKIE_SECURE = False  # Set to True if using HTTPS
+    CSRF_COOKIE_SECURE = False  # Set to True if using HTTPS
